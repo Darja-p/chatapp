@@ -19,16 +19,16 @@ class Users(UserMixin,db.Model):
                          nullable=False)
     user_bio = db.Column(db.String (120) , nullable=True)
     email = db.Column (db.String (120) , unique=True , nullable=False)
-    image_file = db.Column (db.String (20) , nullable=False , default='default.jpg')
-    password = db.Column (db.String (60) , nullable=False)
+    image_file = db.Column (db.String (20) , nullable=True , default='default.jpg')
+    password = db.Column (db.String (150) , nullable=False)
     last_updated = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     created_at = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     chatmaps = db.relationship('Chatmap', backref='author', lazy='dynamic')
     # contacts = db.relationship('Contacts', backref='contact', lazy='dynamic')
     # blocked = db.relationship('Contacts', backref='blocker', lazy='dynamic')
 
-    def set_password (self , password) :
-        self.password_hash = generate_password_hash (password)
+    # def set_password (self , password) :
+    #     self.password = generate_password_hash (password)
 
     def check_password (self , password) :
         return check_password_hash (self.password_hash , password)
@@ -47,7 +47,7 @@ class Users(UserMixin,db.Model):
 
 @login.user_loader
 def load_user (id) :
-        return Users.query.get (int (id))
+        return Users.query.get(int (id))
 
 
 class Messages(db.Model):
