@@ -46,7 +46,6 @@ ChatApi = Blueprint('chat_api', __name__)
 @ChatApi.route('/chats/<chat_id>/messages', methods=['GET', 'POST'])
 def messages(chat_id):
     user_id = int(request.args.get('user_id'))
-
     if request.method == 'GET':
         chats = Chatmap.query.filter (Chatmap.users == user_id, Chatmap.chats == chat_id).all ()
         if chats is None:
@@ -75,8 +74,17 @@ def messages(chat_id):
 @ChatApi.route('/chats', methods = ['GET'])
 def chat_list():
     user_id = int (request.args.get ('user_id'))
-    # chats = Chat.query.filter(Chat.creator_id == user_id).all()
+    # user = Users.get(user_id)
+    # user_name = f"{user.first_name} "
+    # # chats = Chat.query.filter(Chat.creator_id == user_id).all()
     chats = Chat.query.join(Chatmap, (Chatmap.chats==Chat.id)).filter(Chatmap.users == user_id).all ()
-    return jsonify([x.to_dict() for x in chats]), 200
+    chat_list=[]
+    for c in chats:
+        chat_list.append(dict(
+            info=c,
+            last_message=Messages.query.filter_by(chat=c.id).order_by(Messages.date_created.desc()).first()
+        ))
+
+    return render_template('chat.html', chats=chat_list, user_id=user_id )
 
 

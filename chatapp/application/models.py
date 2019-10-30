@@ -70,6 +70,7 @@ class Messages(db.Model):
         return {
            'body' : self.body,
            'date_created': self.date_created,
+           'sender_id' : self.sender_id,
         }
 
 
