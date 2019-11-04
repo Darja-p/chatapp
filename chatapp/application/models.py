@@ -31,7 +31,8 @@ class Users(UserMixin,db.Model):
     #     self.password = generate_password_hash (password)
 
     def check_password (self , password) :
-        return check_password_hash (self.password_hash , password)
+        # return check_password_hash (self.password_hash , password)
+        return password
 
     # @staticmethod
     # def from_dict(dict):
@@ -68,6 +69,7 @@ class Messages(db.Model):
     def to_dict (self):
         """Return object data in easily serializable format"""
         return {
+            'id' : self.id,
            'body' : self.body,
            'date_created': self.date_created,
            'sender_id' : self.sender_id,
@@ -93,6 +95,7 @@ class Chatmap (db.Model) :
            'user'         : self.users,
            'chats': self.chats,
         }
+    # def add_users(chat_id):
 
 
 class Chat(db.Model):

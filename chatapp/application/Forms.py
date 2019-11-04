@@ -36,3 +36,8 @@ class RegistrationForm(FlaskForm):
         user = Users.query.filter_by (email=email.data).first ()
         if user is not None :
             raise ValidationError ('Please use a different email address.')
+
+class NewChat(FlaskForm) :
+    name = StringField ('Name of the chat')
+    email = StringField ("User's email")
+    submit = SubmitField ('Create Chat')
