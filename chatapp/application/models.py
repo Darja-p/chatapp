@@ -30,21 +30,27 @@ class Users(UserMixin,db.Model):
     # def set_password (self , password) :
     #     self.password = generate_password_hash (password)
 
+    def __repr__(self):
+        return f"User({self.body},{self.chat},{self.author}"
+
     def check_password (self , password) :
         # return check_password_hash (self.password_hash , password)
-        return password
+        if password !=self.password:
+            return False
+        else:
+            return True
 
     # @staticmethod
     # def from_dict(dict):
     #     return TODOS(description=dict['description'],due_date = dict['due_date'])
     #
-    # def to_dict(self):
-    #    """Return object data in easily serializable format"""
-    #    return {
-    #        'id'         : self.id,
-    #        'description': self.description,
-    #        'due_date'   : self.due_date,
-    #    }
+    def to_dict(self):
+       """Return object data in easily serializable format"""
+       return {
+           'name'   : self.first_name,
+           'surname': self.last_name,
+           'image'  : self.image_file,
+       }
 
 @login.user_loader
 def load_user (id) :
@@ -61,7 +67,7 @@ class Messages(db.Model):
     date_created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __repr__(self):
-        return '<Post {}>'.format(self.body)
+        return f"Message({self.body},{self.chat},{self.author}"
 
     def from_dict(dict):
         return Messages(body=dict['body'],chat = dict['chat'], sender_id = dict['sender_id'])
@@ -89,11 +95,12 @@ class Chatmap (db.Model) :
     users = db.Column (db.Integer , db.ForeignKey ('users.id') , nullable=False)
     chats = db.Column (db.Integer , db.ForeignKey ('chat.id') , nullable=False)
 
+
     def to_dict (self):
         """Return object data in easily serializable format"""
         return {
-           'user'         : self.users,
-           'chats': self.chats,
+           'user': self.author.name,
+           'chat': self.chats,
         }
     # def add_users(chat_id):
 

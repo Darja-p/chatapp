@@ -37,7 +37,6 @@ const displayMessage = (message) => {
 
 
 const addMessages = (messages) => {
-    // let messages = mockAPI.conversations[0].messages;
     for (const message of messages){
         if(!loadedMessages.has(message.id)) {
             loadedMessages.add(message.id);
@@ -57,7 +56,7 @@ const retrieveMessages = (user_id, chat_id) => {
 
 
 
-const conversationElement = document.getElementsByClassName("convo");
+
 
 const convoClick = (event) => {
     const clicked = event.currentTarget;
@@ -65,11 +64,12 @@ const convoClick = (event) => {
     const dataAttributes = clicked.dataset;
     userID= dataAttributes.user_id;
     currentChat = dataAttributes.chat_id;
+    currentChatName = dataAttributes.chat_name
     document.querySelector('#sndr-chat_id').value = currentChat;
     deleteAll();
     //adding messages in current chat to the main chat
     retrieveMessages(userID,currentChat);
-    //adding class active to the convo
+    //adding class active to the convo (first removing from the eiting one)
     let conversationActive = document.querySelector(".convo.active");
     console.log(conversationActive)
     if(conversationActive !== null) {
@@ -86,20 +86,70 @@ setInterval (() => {
         
 
 const deleteAll = () => {
+    // clearing all the messages in a main chat to reload messages
     loadedMessages.clear();
     const chatWrap = document.querySelector('#main-chat-wrap')
     chatWrap.innerHTML = ""
 }
+
+const conversationElement = document.getElementsByClassName("convo");
 
 for (let i=0; i < conversationElement.length; i++) {
     conversationElement[i].addEventListener('click', convoClick, false);
 }
 
 const addActive = (activeElement) => {
-    // function removes active from all convo and then adds only to the one which was clicked on
-    // if (!activeElement.classList.contains("active")){
+    // function adds active to the one which was clicked on
     activeElement.classList.add('active')
+    deleteUsers()
+    showUsers()
 }
+
+const deleteUsers = () => {
+    const usersWrap = document.querySelector('#contact-header')
+    usersWrap.innerHTML = ""
+}
+
+
+const showUsers = () => {
+    if (currentChat !== null){
+    const url = `/api/chats/${currentChat}/users`
+    fetch(url, {
+        method:'GET',})
+        .then(res => res.json())
+        .then(data => addNamesImages(data))
+    }
+}
+
+const addNamesImages = (users) => {
+    const usersHeader = document.querySelector('#contact-header')
+    for (const user of users){
+
+    let userPicture = document.createElement('div')
+    userPicture.classList.add('head-img-wrap');
+
+    let userPictureFile = document.createElement('img')
+    userPictureFile.setAttribute("id", "user-image");
+    userPictureFile.classList.add("icon-img")
+    userPictureFile.setAttribute("src",`/static/images/profilep/${user.image}`)
+
+    userPicture.appendChild(userPictureFile)
+
+    let userinChat = document.createElement('div')
+    userinChat.classList.add('phone-number');
+
+    let usersinChatName = document.createElement('p')
+    usersinChatName.setAttribute("id", "sender-name");
+    usersinChatName.innerHTML = user.name
+
+    userinChat.appendChild(usersinChatName)
+
+    usersHeader.appendChild(userPicture)
+    usersHeader.appendChild(userinChat)
+    }
+}
+
+
     
 const submitNewMessage = () => {
     // let addedMessage = document.getElementById('new-message-form').value
@@ -121,14 +171,87 @@ const submitNewMessage = () => {
         body:JSON.stringify(post_data)
     }).then(res => res.json())
         .then(data => {
+            // displaying message in the main window and adding message to the set of loaded message
             displayMessage(data)
+            loadedMessages.add(data.id);
+            // rewriting new message with emty string
             document.querySelector("#new-message").value = " "
+            // updating last message in a chat in the side bar on a left
             document.querySelector(`div.convo[data-chat_id="${chat_id}"] p.mssg`).innerHTML = data.body
             })
         }
         
+const deleteChat = () => {
+    if (currentChat !== null){
+        var okToRefresh = confirm(`Do you really want to delete the chat ${currentChatName}?`);
+        if (okToRefresh){
+            console.log(currentChat)
+    const url = `/api/chats/${currentChat}`
+    fetch(url, {
+        method:'DELETE',
+        }) .then (loadDiv())
+    }}
+}
+
+const loadDiv = () => {
+    // console.log(document.querySelector('#convo-wrap'))
+    // location.reload(true)
+    setTimeout(function () {
+            location.reload()
+        }, 100);
+    }
+
+const addUser = () => {
+    if (currentChat !== null){
+    const user_add=document.querySelector('#email-input').value;
+    const url = `/api/chats/${currentChat}?user=${user_add}`
+    fetch(url, {
+        method:'POST',
+    }).then (closeDropdown())
+    .then(loadDiv())
+}
+    else {
+        alert("Please click on a chat first")
+        ;}
+}
+
+/* When the user clicks on the button with dropdown,
+toggle between hiding and showing the dropdown content */
+const showDropdown = () => {
+    document.getElementById("myDropdown").classList.toggle("show");
+    // document.querySelector("myDropdown").classList.add("show");
+  }
+
+  const closeDropdown = () => {
+    document.getElementById("myDropdown").classList.remove("show");
+    // document.querySelector("myDropdown").classList.add("show");
+  }
 
 
+// Close the dropdown menu if the user clicks outside of it
+// window.onclick = function(event) {
+//     if (!event.target.matches('.dropbtn')) {
+//       var dropdowns = document.getElementsByClassName("dropdown-content");
+//       var i;
+//       for (i = 0; i < dropdowns.length; i++) {
+//         var openDropdown = dropdowns[i];
+//         if (openDropdown.classList.contains('show')) {
+//           openDropdown.classList.remove('show');
+//         }
+//       }
+//     }
+//   }
+
+//    location = window.location.reload(true);
+
+//    document.querySelector('#convo-wrap').contentWindow.location.reload(true);
+//    const chatsToUpdate = document.querySelector('#convo-wrap')
+//    var newChats = chatsToUpdate.innerHTML;
+//    chatsToUpdate.innerHTML = "";
+//    chatsToUpdate.innerHTML = newChats;
+
+
+//    document.getElementById("youriframeid").contentWindow.location.reload(true);
         // const addedChat=document.querySelector('#new-message').value;
         // const chat_id = document.querySelector('#sndr-chat_id').value;
         // const user_id = document.querySelector('#sndr-name').value;

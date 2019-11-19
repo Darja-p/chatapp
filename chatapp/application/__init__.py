@@ -17,6 +17,7 @@ def create_app():
     db.init_app(app)
     login = LoginManager(app)
     login.login_view = 'login'
+    login.login_message_category = 'info'
 
     with app.app_context():
 

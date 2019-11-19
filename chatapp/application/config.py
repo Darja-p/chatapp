@@ -14,7 +14,7 @@ class Config(object):
     #SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://{user}:{pw}@{url}/{db}'.format(user='postgres',pw='mysecretpassword',url='localhost',db='postgres')
 
     # mysql
-    SQLALCHEMY_DATABASE_URI = f'mysql://root:{os.environ.get("MYSQL_PASSWORD")}@localhost/chatapp'
+    SQLALCHEMY_DATABASE_URI = f'mysql://{os.environ.get("MYSQL_DBNAME", default = "root")}:{os.environ.get("MYSQL_PASSWORD")}@{os.environ.get("MYSQL_host",default="localhost")}/chatapp'
 
 
 class ProductionConfig(Config):

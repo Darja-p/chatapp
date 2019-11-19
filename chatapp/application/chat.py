@@ -1,13 +1,11 @@
-from flask import Blueprint, jsonify, request, render_template, redirect, url_for
-from flask_login import current_user, login_user
+from flask import Blueprint, jsonify, request, render_template, redirect, url_for, flash
+from flask_login import current_user, login_user,login_required
 
 from . import db
 from .models import Chat,Chatmap, Messages, Users, load_user
 from .Forms import AddingMessage, NewChat
 
 ChatApi = Blueprint('chat_api', __name__)
-
-
 
         # task = TODOS.from_dict(request.json)
     # except KeyError as e:
@@ -17,17 +15,28 @@ ChatApi = Blueprint('chat_api', __name__)
     # db.session.commit()
     # return jsonify(), 200
 
-
-
-
-
-
-# @ChatApi.route('/<id>', methods = ['DELETE'])
-# def delete(id):
-#     task = TODOS.query.filter(TODOS.id == id).first()  #order_by(TODOS.due_date).
-#     db.session.delete (task)
-#     db.session.commit ()
-#     return jsonify () , 200
+@ChatApi.route('/chats/<chat_id>', methods = ['DELETE'])
+@login_required
+def delete(chat_id):
+    chat = Chat.query.filter_by(id =chat_id).first()
+    chatmap = Chatmap.query.filter_by(chats =chat_id).all()
+    for i in chatmap:
+        db.session.delete(i)
+    messages = Messages.query.filter_by(chat=chat_id).all()
+    for message in messages:
+        db.session.delete(message)
+    db.session.delete (chat)
+    db.session.commit()
+    if current_user.is_authenticated :
+        user_id = current_user.get_id ()
+        chats = Chat.query.join(Chatmap , (Chatmap.chats == Chat.id)).filter(Chatmap.users == user_id).all ()
+        chat_list = []
+        for c in chats :
+            chat_list.append (dict (
+                info=c ,
+                last_message=Messages.query.filter_by (chat=c.id).order_by (Messages.date_created.desc ()).first ()
+            ))
+    return render_template('chat.html', chats=chat_list, user_id=user_id )
 
 
 # @ChatApi.route('/<id>', methods=['PUT'])
@@ -45,8 +54,8 @@ ChatApi = Blueprint('chat_api', __name__)
 #     return jsonify(), 200
 
 @ChatApi.route('/chats/<chat_id>/messages', methods=['GET', 'POST'])
-def messages(chat_id):
-    
+@login_required
+def messages(chat_id):   
     if request.method == 'GET':
         user_id = int(request.args.get('user_id'))
         messages = Messages.query.filter_by (chat=chat_id).all ()
@@ -77,6 +86,7 @@ def messages(chat_id):
 
 
 @ChatApi.route('/chats', methods = ['GET'])
+@login_required
 def chat_list():
         if current_user.is_authenticated:
             user_id = current_user.get_id()
@@ -93,9 +103,11 @@ def chat_list():
                 info=c,
                 last_message=Messages.query.filter_by(chat=c.id).order_by(Messages.date_created.desc()).first()
             ))
-        return render_template('chat.html', chats=chat_list, user_id=user_id )
+        image_file = url_for('static', filename='images/profilep/'+ current_user.image_file)
+        return render_template('chat.html', chats=chat_list, user_id=user_id, image_file=image_file )
 
 @ChatApi.route('/chats/new', methods = ['GET','POST'])
+@login_required
 def new_chat():
     if current_user.is_authenticated:
         user_id = current_user.get_id()
@@ -120,4 +132,34 @@ def new_chat():
     else:
         flash('You need to log in!')
         return redirect(url_for('login'))
-            
+
+
+@ChatApi.route('/chats/<chat_id>', methods = ['POST'])
+@login_required
+def add_user(chat_id):
+    #needs to be added to the function on top
+    user_email = request.args.get ('user')
+    user = Users.query.filter_by(email = user_email).first()
+    chatmap = Chatmap.query.filter(users = user.id,chats = chat_id ).first()
+    if chatmap:
+        pass
+    else:
+        new_chatmap = Chatmap(users = user.id, chats = chat_id)
+        db.session.add(new_chatmap)
+        db.session.commit()
+    chatmaps = Chatmap.query.filter_by(chats = chat_id).all()
+    list_chatmap = ([c.to_dict() for c in chatmaps ])
+    return jsonify(list_chatmap) , 200
+
+@ChatApi.route('/chats/<chat_id>/users', methods=['GET'])
+# @login_required
+def show_users(chat_id):
+    chatmaps = Chatmap.query.filter_by(chats = chat_id).all()
+    list_chatmap = ([c.author.to_dict() for c in chatmaps])
+    return jsonify(list_chatmap) , 200
+
+
+
+
+
+
