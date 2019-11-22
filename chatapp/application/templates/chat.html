@@ -20,7 +20,7 @@
         <div id="header-sidebar-icons">
             <ul>
                 <li>
-                    <button data-click="status" class="svg-wrap">
+                    <button data-click="status" class="svg-wrap" onclick="window.location ='{{ url_for('update') }}';">
                         <svg id="header-status-icon" xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24" width="24" height="24">
                             <image id="logout" xlink:href="{{ url_for('static', filename='images/account.svg') }}"  width="22" height="22"/>

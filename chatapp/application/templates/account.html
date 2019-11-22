@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+{% block content %}
+<div id="main-form">
+    <img class="rounded-circle account-img" id="account-picture" src="{{ image_file }}">
+    <div class="media-body">
+            <h3 class="account-heading">{{current_user.first_name}}</h3>
+            <p class="text-secondary">{{current_user.email}}</p>
+    </div>
+    <form method="POST" action="" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <p class="border-bottom-d">Account Info</p>
+            <div class="form-group">
+                {{ form.first_name.label(class="form-control-label") }}
+                {{ form.first_name(class="form-control-label") }}
+            <div class = "invalid-feedback">
+                {% for error in form.first_name.errors %}
+            <span>[{{ error }}]</span>
+                {% endfor %}
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form.last_name.label(class="form-control-label") }}
+                {{ form.last_name(class="form-control-label") }}
+                <div class = "invalid-feedback">
+                {% for error in form.last_name.errors %}
+            <span>[{{ error }}]</span>
+                {% endfor %}
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form.email.label(class="form-control-label") }}
+                {{ form.email(class="form-control-label") }}
+                <div class = "invalid-feedback">
+                {% for error in form.email.errors %}
+                <span>[{{ error }}]</span>
+                {% endfor %}
+                </div>
+             </div>
+             <div class="form-group">
+                    {{ form.user_bio.label(class="form-control-label") }}
+                    {{ form.user_bio(class="form-control-label") }}
+             </div>
+             <div class="form-group">
+                    {{ form.picture.label() }}
+                    {{ form.picture(class="form-control-file") }}
+                    {% if form.picture.errors %}
+                    {% for error in form.picture.errors %}
+                    <span class="text-danger">[{{ error }}]</span> </br>
+                    {% endfor %}
+                    {% endif %}
+                 </div>
+            </fieldset>
+            <div class="form-group">
+            <p>{{ form.submit(class="btn btn-outline-info") }}</p>
+            </div>
+    </form>
+</div>
+{% endblock content %}

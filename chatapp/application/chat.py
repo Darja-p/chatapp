@@ -39,20 +39,6 @@ def delete(chat_id):
     return render_template('chat.html', chats=chat_list, user_id=user_id )
 
 
-# @ChatApi.route('/<id>', methods=['PUT'])
-# def update_task(id):
-#
-#     try:
-#         task = TODOS.query.filter_by(id =id).first()
-#         task.description = request.json.get ('description' , task.description)
-#         task.due_date= request.json.get ('due_date' , task.due_date)
-#         db.session.commit ()
-#     except KeyError as e:
-#         return jsonify(f'Missing key: {e.args[0]}'), 400
-#
-#     db.session.commit()
-#     return jsonify(), 200
-
 @ChatApi.route('/chats/<chat_id>/messages', methods=['GET', 'POST'])
 @login_required
 def messages(chat_id):   
@@ -88,14 +74,8 @@ def messages(chat_id):
 @ChatApi.route('/chats', methods = ['GET'])
 @login_required
 def chat_list():
-        if current_user.is_authenticated:
-            user_id = current_user.get_id()
-            # user_id = load_user(user_id)
-        else: 
-            user_id = int (request.args.get ('user_id'))
-        # user = Users.get(user_id)
-        # user_name = f"{user.first_name} "
-        # # chats = Chat.query.filter(Chat.creator_id == user_id).all()
+        user_id = current_user.get_id()
+        #     user_id = int (request.args.get ('user_id'))
         chats = Chat.query.join(Chatmap, (Chatmap.chats==Chat.id)).filter(Chatmap.users == user_id).all ()
         chat_list=[]
         for c in chats:
