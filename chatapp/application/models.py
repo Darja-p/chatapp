@@ -19,7 +19,7 @@ class Users(UserMixin,db.Model):
                          nullable=False)
     user_bio = db.Column(db.String (120) , nullable=True)
     email = db.Column (db.String (120) , unique=True , nullable=False)
-    image_file = db.Column (db.String (20) , nullable=True , default='default.jpg')
+    image_file = db.Column (db.String (100) , nullable=True , default='default.jpg')
     password = db.Column (db.String (150) , nullable=False)
     last_updated = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     created_at = db.Column(db.DateTime, index=True, default=datetime.utcnow)
@@ -27,23 +27,20 @@ class Users(UserMixin,db.Model):
     # contacts = db.relationship('Contacts', backref='contact', lazy='dynamic')
     # blocked = db.relationship('Contacts', backref='blocker', lazy='dynamic')
 
-    # def set_password (self , password) :
-    #     self.password = generate_password_hash (password)
-
     def __repr__(self):
         return f"User({self.body},{self.chat},{self.author}"
 
-    def check_password (self , password) :
-        # return check_password_hash (self.password_hash , password)
-        if password !=self.password:
-            return False
-        else:
-            return True
+    def set_password (self , password) :
+        self.password = generate_password_hash (password)
 
-    # @staticmethod
-    # def from_dict(dict):
-    #     return TODOS(description=dict['description'],due_date = dict['due_date'])
-    #
+
+    def check_password (self , password) :
+        return check_password_hash (self.password , password)
+        # if password !=self.password:
+        #     return False
+        # else:
+        #     return True
+
     def to_dict(self):
        """Return object data in easily serializable format"""
        return {
@@ -65,6 +62,7 @@ class Messages(db.Model):
     chat = db.Column(db.Integer, db.ForeignKey('chat.id'),nullable=False)
     sender_id = db.Column(db.Integer, db.ForeignKey('users.id'),nullable=False)
     date_created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    attachment = db.Column (db.String (100) , nullable=True )
 
     def __repr__(self):
         return f"Message({self.body},{self.chat},{self.author}"

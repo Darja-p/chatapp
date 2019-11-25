@@ -52,7 +52,7 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         user = Users(first_name=form.first_name.data,last_name = form.last_name.data, email=form.email.data, password = form.password.data)
-        # user.set_password(form.password.data)
+        user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
         flash('Congratulations, you are now a registered user!','success')

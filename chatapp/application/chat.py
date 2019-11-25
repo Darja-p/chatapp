@@ -139,6 +139,19 @@ def show_users(chat_id):
     return jsonify(list_chatmap) , 200
 
 
+def save_picture(user_image):
+    file_name = secrets.token_hex(8)
+    _ , f_ext = os.path.splitext (user_image.filename)
+    picture_fn = file_name + f_ext
+    picture_path = os.path.join (app.root_path , 'static/images/profilep' , picture_fn)
+    # user_image.save(picture_path)
+
+    output_size = (125, 125)
+    i = Image.open(user_image)
+    i.thumbnail (output_size)
+    i.save (picture_path)
+
+    return picture_fn
 
 
 

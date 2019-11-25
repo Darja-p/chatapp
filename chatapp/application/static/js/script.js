@@ -215,6 +215,30 @@ const addUser = () => {
         ;}
 }
 
+
+const realBtn = document.getElementById("picture-upload");
+
+const attachImage = () => {
+    realBtn.click();
+}
+
+realBtn.addEventListener("change", function() {
+    if (realBtn.value) {
+        var img = document.createElement("img");
+    }})
+
+        //   img.src = realBtn.value; 
+        //   img.height = 50; 
+        //   img.width = 100;
+
+        //   //optionally set a css class on the image
+        //   var class_name = "foo";
+        //   img.setAttribute("class", class_name);
+
+        //   document.body.appendChild(img);
+
+
+
 /* When the user clicks on the button with dropdown,
 toggle between hiding and showing the dropdown content */
 const showDropdown = () => {
