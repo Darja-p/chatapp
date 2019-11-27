@@ -20,7 +20,7 @@ class LoginForm (FlaskForm) :
 
 class RegistrationForm(FlaskForm):
     first_name = StringField ('First name' , validators=[DataRequired ()])
-    last_name = StringField ('First name' , validators=[DataRequired ()])
+    last_name = StringField ('Last name' , validators=[DataRequired ()])
     email = StringField ('email' , validators=[DataRequired ()])
     password = PasswordField ('Password' , validators=[DataRequired ()])
     password2 = PasswordField (

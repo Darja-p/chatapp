@@ -1,5 +1,9 @@
+import secrets
+import os
+import json
 from flask import Blueprint, jsonify, request, render_template, redirect, url_for, flash
 from flask_login import current_user, login_user,login_required
+from flask import current_app as app
 
 from . import db
 from .models import Chat,Chatmap, Messages, Users, load_user
@@ -138,20 +142,51 @@ def show_users(chat_id):
     list_chatmap = ([c.author.to_dict() for c in chatmaps])
     return jsonify(list_chatmap) , 200
 
-
 def save_picture(user_image):
     file_name = secrets.token_hex(8)
     _ , f_ext = os.path.splitext (user_image.filename)
     picture_fn = file_name + f_ext
-    picture_path = os.path.join (app.root_path , 'static/images/profilep' , picture_fn)
-    # user_image.save(picture_path)
+    picture_path = os.path.join(app.root_path,'api/static/pictures', picture_fn)
+    print(picture_path)
+    user_image.save(picture_path)
 
-    output_size = (125, 125)
-    i = Image.open(user_image)
-    i.thumbnail (output_size)
-    i.save (picture_path)
+    # optionally changing the size of an image before saving
+    # output_size = (125, 125)
+    # i = Image.open(user_image)
+    # i.thumbnail (output_size)
+    # i.save (picture_path)
 
     return picture_fn
+
+
+@ChatApi.route('/chats/<chat_id>/upload_image', methods=["GET",'POST'])
+# @login_required
+def message_with_image(chat_id):
+    if request.method == 'POST':
+        image = request.files['file']
+        picture = save_picture(image)
+        print(picture)
+        # picture = request.data['picture']
+        # picture = save_picture(picture)
+        try:
+            # message = Messages.from_dict (request.json)
+            post = request.form['post']
+            print(post)
+            print(type(post))
+            post = json.loads(post)
+            body1 = post["body"]
+            sender_id1 = current_user.get_id()
+            message = Messages(body=body1,chat = chat_id, sender_id = sender_id1, attachment = picture)
+        except KeyError as e:
+            return jsonify(f'Missing key: {e.args[0]}'), 400
+
+        db.session.add(message)
+        db.session.commit()
+        message = message.to_dict()
+        return jsonify(message) , 200
+
+
+
 
 
 

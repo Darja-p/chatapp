@@ -72,12 +72,21 @@ class Messages(db.Model):
 
     def to_dict (self):
         """Return object data in easily serializable format"""
-        return {
-            'id' : self.id,
-           'body' : self.body,
-           'date_created': self.date_created,
-           'sender_id' : self.sender_id,
-        }
+        if self.attachment:
+            return {
+                'id' : self.id,
+               'body' : self.body,
+               'date_created': self.date_created,
+               'sender_id' : self.sender_id,
+                'attachment' : self.attachment,
+            }
+        else:
+            return {
+                'id' : self.id ,
+                'body' : self.body ,
+                'date_created' : self.date_created ,
+                'sender_id' : self.sender_id ,
+            }
 
 
     # followed = db.relationship (

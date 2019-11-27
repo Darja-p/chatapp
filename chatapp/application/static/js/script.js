@@ -20,12 +20,24 @@ const displayMessage = (message) => {
     let newMessage = document.createElement('p')
     newMessage.classList.add('mssg');
     newMessage.innerHTML = message.body
+    message_in_chat.appendChild(newMessage)
+
+    if (message.attachment != null) {
+        let newPicture = document.createElement('img')
+        // newPicture.classList.add('mssg');
+        newPicture.height = 50; 
+        newPicture.width = 100; 
+        // let location = window.location.pathname;
+        // var directoryPath = location.substring(0, location.lastIndexOf("/"));
+        newPicture.src = `./static/pictures/${message.attachment}`;
+        message_in_chat.appendChild(newPicture)
+
+    }
 
     let newMessageTime = document.createElement('p')
     newMessageTime.classList.add('mssg-time');
     newMessageTime.innerHTML = message.date_created
 
-    message_in_chat.appendChild(newMessage)
     message_in_chat.appendChild(newMessageTime)
 
     messageWrap.appendChild(message_in_chat)
@@ -223,19 +235,52 @@ const attachImage = () => {
 }
 
 realBtn.addEventListener("change", function() {
-    if (realBtn.value) {
-        var img = document.createElement("img");
-    }})
+    if (realBtn.files[0]) {
+        let file = document.getElementById("picture-upload").files[0];
+        console.log(file)
+        console.log(file.type)  
+         // Check the file type.
+        if (file.type.match('image.*')) {  
+            let formData = new FormData();
+            formData.append("file", file, file.name);
+// fetch('/upload/image', {method: "POST", body: formData});
+// let user = {name:'john', age:34} in this way: formData.append("user", JSON.stringify(user));
+        // var img = document.createElement("img");
+        // img.src = realBtn.value; 
+        // img.height = 50; 
+        // img.width = 100; 
+    const addedMessageImage = ""      
+    const chat_id_i = currentChat;
+    const user_id_i = userID;
+    let post = {body: "", chat: chat_id_i, sender_id: user_id_i }
+    formData.append('post', JSON.stringify(post))
+    // formData.append ('chat', JSON.stringify(chat_id_i))
+    // formData.append ('sender_id', JSON.stringify(user_id_i))
+    const url = `/api/chats/${chat_id_i}/upload_image?user_id=${user_id_i}`
+    console.log(formData);
+    console.log(formData.get('file'));
+    console.log(formData.get('post'));
+    fetch(url, {
+        method:'POST',
+        body: formData
+    }).then (res => res.json()
+       .then(data => {
+    //  displaying message in the main window and adding message to the set of loaded message
+    console.log(data)
+        displayMessage(data)
+        loadedMessages.add(data.id);
+            // // rewriting new message with emty string
+            // document.querySelector("#new-message").value = " "
+            // // updating last message in a chat in the side bar on a left
+            // document.querySelector(`div.convo[data-chat_id="${chat_id}"] p.mssg`).innerHTML = data.body
+            })
+    )}}})
 
-        //   img.src = realBtn.value; 
-        //   img.height = 50; 
-        //   img.width = 100;
 
         //   //optionally set a css class on the image
         //   var class_name = "foo";
         //   img.setAttribute("class", class_name);
 
-        //   document.body.appendChild(img);
 
 
 
