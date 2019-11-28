@@ -1,13 +1,17 @@
+import flask_migrate
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
+from oauthlib.oauth2 import WebApplicationClient
 
 
 from .config import DevelopmentConfig
 
 db = SQLAlchemy()
 login = None
+oauth_client = None
+
 
 def create_app():
     global login
@@ -21,6 +25,10 @@ def create_app():
     login.login_view = 'login'
     login.login_message_category = 'info'
 
+    # OAuth 2 client setup
+    oauth_client = WebApplicationClient(app.config ['GOOGLE_CLIENT_ID'])
+
+
     with app.app_context():
 
         # Imports
@@ -30,3 +38,5 @@ def create_app():
         db.create_all()
 
         return app
+
+

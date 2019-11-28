@@ -16,6 +16,7 @@ decorator==4.4.0
 defusedxml==0.6.0
 entrypoints==0.3
 Flask==1.1.1
+Flask-Login==0.4.1
 flask-restplus==0.13.0
 Flask-SQLAlchemy==2.4.1
 flask-swagger==0.2.14
@@ -87,4 +88,3 @@ Werkzeug==0.16.0
 widgetsnbextension==3.5.1
 WTForms==2.2.1
 zipp==0.6.0
-

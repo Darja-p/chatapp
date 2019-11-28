@@ -1,5 +1,7 @@
 import os
+import json
 import secrets
+import requests
 from PIL import Image
 from flask import current_app as app
 from flask import render_template, request, redirect, url_for, flash
@@ -9,8 +11,13 @@ from .models import Users
 from .chat import ChatApi
 from .Forms import LoginForm, RegistrationForm, UpdateForm
 from . import db
+from . import oauth_client
 
 app.register_blueprint(ChatApi, url_prefix='/api')
+
+# function for retrieving Google’s provider configuration
+def get_google_provider_cfg():
+    return requests.get(app.config['GOOGLE_DISCOVERY_URL']).json()
 
 # homepage
 @app.route('/', methods=['GET'])
@@ -24,22 +31,99 @@ def index():
     # user = Users.query.filter_by(id=user_id).first()
     return render_template('hello.html', name = user_name)
 
+# login page using Google OAuth
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('chat_api.chat_list'))
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = Users.query.filter_by(email=form.email.data).first()
-        if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
-            return redirect(url_for('login'))
-        next_page=request.args.get('next')
-        login_user(user, remember=form.remember_me.data)
-        return redirect(next_page) if next_page else redirect(url_for('chat_api.chat_list'))
-    return render_template('login.html', form=form)
+
+    # Find out what URL to hit for Google login
+    google_provider_cfg = get_google_provider_cfg ()
+    authorization_endpoint = google_provider_cfg ["authorization_endpoint"]
+
+    # Use library to construct the request for Google login and provide
+    # scopes that let you retrieve user's profile from Google
+    request_uri = oauth_client.prepare_request_uri (
+        authorization_endpoint ,
+        redirect_uri=request.base_url + "/callback" ,
+        scope=["openid" , "email" , "profile"] ,
+    )
+
+    return redirect (request_uri)
+    """form = LoginForm()
+        if form.validate_on_submit():
+            user = Users.query.filter_by(email=form.email.data).first()
+            if user is None or not user.check_password(form.password.data):
+                flash('Invalid username or password')
+                return redirect(url_for('login'))
+            next_page=request.args.get('next')
+            login_user(user, remember=form.remember_me.data)
+            return redirect(next_page) if next_page else redirect(url_for('chat_api.chat_list'))
+        return render_template('login.html', form=form)"""
+
+@app.route("/login/callback")
+def callback():
+    # Get authorization code Google sent back to you
+    code = request.args.get("code")
+
+    # Find out what URL to hit to get tokens that allow you to ask for
+    # things on behalf of a user
+    google_provider_cfg = get_google_provider_cfg()
+    token_endpoint = google_provider_cfg ["token_endpoint"]
+
+    # Prepare and send a request to get tokens
+    token_url , headers , body = oauth_client.prepare_token_request (
+        token_endpoint ,
+        authorization_response=request.url ,
+        redirect_url=request.base_url ,
+        code=code
+    )
+    token_response = requests.post (
+        token_url ,
+        headers=headers ,
+        data=body ,
+        auth=(app.config['GOOGLE_CLIENT_ID'] ,app.config['GOOGLE_CLIENT_SECRET']) ,
+    )
+
+    # Parse the tokens
+    oauth_client.parse_request_body_response (json.dumps (token_response.json ()))
+
+    # find and hit the URL
+    # from Google that gives the user's profile information,
+    # including their Google profile image and email
+    userinfo_endpoint = google_provider_cfg ["userinfo_endpoint"]
+    uri , headers , body = oauth_client.add_token (userinfo_endpoint)
+    userinfo_response = requests.get (uri , headers=headers , data=body)
+
+    # Verification of user's email.
+    # The user authenticated with Google, authorized your
+    # app, and now you've verified their email through Google!
+    if userinfo_response.json ().get ("email_verified") :
+        unique_id = userinfo_response.json () ["sub"]
+        users_email = userinfo_response.json () ["email"]
+        picture = userinfo_response.json () ["picture"]
+        users_name = userinfo_response.json () ["given_name"]
+    else :
+        return "User email not available or not verified by Google." , 400
+
+    # Create a user in db with the information provided
+    # by Google
+    user = Users (
+        id_=unique_id , first_name=users_name ,  email=users_email , image_file=picture)
+
+    # Doesn't exist? Add it to the database.
+    if not Users.get (unique_id) :
+        db.session.add (user)
+        db.session.commit ()
+
+    # Begin user session by logging the user in
+    login_user (user)
+
+    # Send user to chats
+    return redirect(url_for('chat_api.chat_list'))
 
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('index'))

@@ -16,6 +16,12 @@ class Config(object):
     # mysql
     SQLALCHEMY_DATABASE_URI = f'mysql://{os.environ.get("MYSQL_DBNAME", default = "root")}:{os.environ.get("MYSQL_PASSWORD")}@{os.environ.get("MYSQL_host",default="localhost")}/chatapp'
 
+    # Google OAuth2 configuration
+    GOOGLE_CLIENT_ID = os.environ.get ("GOOGLE_CLIENT_ID" , None)
+    GOOGLE_CLIENT_SECRET = os.environ.get ("GOOGLE_CLIENT_SECRET" , None)
+    GOOGLE_DISCOVERY_URL = (
+        "https://accounts.google.com/.well-known/openid-configuration"
+    )
 
 class ProductionConfig(Config):
     DEBUG = False
