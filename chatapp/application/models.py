@@ -11,6 +11,7 @@ class Users(UserMixin,db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer,
                    primary_key=True)
+    google_id = db.Column(db.String(50), index=True, nullable=True)
     first_name=db.Column(db.String(50),
                          index=False,
                          nullable=False)
@@ -20,7 +21,7 @@ class Users(UserMixin,db.Model):
     user_bio = db.Column(db.String (120) , nullable=True)
     email = db.Column (db.String (120) , unique=True , nullable=False)
     image_file = db.Column (db.String (100) , nullable=True , default='default.jpg')
-    password = db.Column (db.String (150) , nullable=False)
+    password = db.Column (db.String (150) , nullable=True)
     last_updated = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     created_at = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     chatmaps = db.relationship('Chatmap', backref='author', lazy='dynamic')

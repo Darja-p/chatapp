@@ -33,7 +33,7 @@ def index():
 
 # login page using Google OAuth
 @app.route('/login', methods=['GET', 'POST'])
-def login():
+def login_oauth():
     if current_user.is_authenticated:
         return redirect(url_for('chat_api.chat_list'))
 
@@ -48,18 +48,20 @@ def login():
         redirect_uri=request.base_url + "/callback" ,
         scope=["openid" , "email" , "profile"] ,
     )
-
     return redirect (request_uri)
-    """form = LoginForm()
-        if form.validate_on_submit():
-            user = Users.query.filter_by(email=form.email.data).first()
-            if user is None or not user.check_password(form.password.data):
-                flash('Invalid username or password')
-                return redirect(url_for('login'))
-            next_page=request.args.get('next')
-            login_user(user, remember=form.remember_me.data)
-            return redirect(next_page) if next_page else redirect(url_for('chat_api.chat_list'))
-        return render_template('login.html', form=form)"""
+
+@app.route ('/login-regular' , methods=['GET' , 'POST'])
+def login () :
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = Users.query.filter_by(email=form.email.data).first()
+        if user is None or not user.check_password(form.password.data):
+            flash('Invalid username or password')
+            return redirect(url_for('login'))
+        next_page=request.args.get('next')
+        login_user(user, remember=form.remember_me.data)
+        return redirect(next_page) if next_page else redirect(url_for('chat_api.chat_list'))
+    return render_template('login.html', form=form)
 
 @app.route("/login/callback")
 def callback():
@@ -103,16 +105,16 @@ def callback():
         users_email = userinfo_response.json () ["email"]
         picture = userinfo_response.json () ["picture"]
         users_name = userinfo_response.json () ["given_name"]
+        users_surname = userinfo_response.json()["family_name"]
     else :
         return "User email not available or not verified by Google." , 400
 
-    # Create a user in db with the information provided
-    # by Google
-    user = Users (
-        id_=unique_id , first_name=users_name ,  email=users_email , image_file=picture)
-
     # Doesn't exist? Add it to the database.
-    if not Users.get (unique_id) :
+    user = db.session.query(Users).filter_by(google_id = unique_id).first()
+    if not user:
+        # Create a user in db with the information provided
+        # by Google
+        user = Users (google_id=unique_id , first_name=users_name , last_name = users_surname, email=users_email , image_file=picture)
         db.session.add (user)
         db.session.commit ()
 

@@ -87,7 +87,10 @@ def chat_list():
                 info=c,
                 last_message=Messages.query.filter_by(chat=c.id).order_by(Messages.date_created.desc()).first()
             ))
-        image_file = url_for('static', filename='images/profilep/'+ current_user.image_file)
+        if not current_user.image_file.startswith("http"):
+            image_file = url_for('static', filename='images/profilep/'+ current_user.image_file)
+        else:
+            image_file = current_user.image_file
         return render_template('chat.html', chats=chat_list, user_id=user_id, image_file=image_file )
 
 @ChatApi.route('/chats/new', methods = ['GET','POST'])
@@ -146,7 +149,7 @@ def save_picture(user_image):
     file_name = secrets.token_hex(8)
     _ , f_ext = os.path.splitext (user_image.filename)
     picture_fn = file_name + f_ext
-    picture_path = os.path.join(app.root_path,'api/static/pictures', picture_fn)
+    picture_path = os.path.join(app.root_path,'static/pictures', picture_fn)
     print(picture_path)
     user_image.save(picture_path)
 
@@ -165,7 +168,6 @@ def message_with_image(chat_id):
     if request.method == 'POST':
         image = request.files['file']
         picture = save_picture(image)
-        print(picture)
         # picture = request.data['picture']
         # picture = save_picture(picture)
         try:

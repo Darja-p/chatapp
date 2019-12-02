@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"> 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <title>Mutts App</title>
+    <title>Chit Chat</title>
 </head>
 <header>
     <body>
@@ -114,7 +114,7 @@
                 </li>
                 <li>
                     <div class="dropdown">
-                    <button data-click="head-menu" class="svg-wrap" onclick="showDropdown()">
+                    <button data-click="head-menu" class="svg-wrap" onclick="showDropdown()" id="drop-btn">
                     <svg id="Header-add-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
                         <image id="add" xlink:href="{{ url_for('static', filename='images/addButton.svg') }}"  width="22" height="22"/>
                         <!-- <path fill="#263238" fill-opacity=".6"

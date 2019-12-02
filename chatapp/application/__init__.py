@@ -15,6 +15,7 @@ oauth_client = None
 
 def create_app():
     global login
+    global oauth_client
 
     """Construct the core application."""
     app = Flask(__name__, instance_relative_config=False)

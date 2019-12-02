@@ -29,7 +29,7 @@ const displayMessage = (message) => {
         newPicture.width = 100; 
         // let location = window.location.pathname;
         // var directoryPath = location.substring(0, location.lastIndexOf("/"));
-        newPicture.src = `./static/pictures/${message.attachment}`;
+        newPicture.src = `../static/pictures/${message.attachment}`;
         message_in_chat.appendChild(newPicture)
 
     }
@@ -143,8 +143,12 @@ const addNamesImages = (users) => {
     let userPictureFile = document.createElement('img')
     userPictureFile.setAttribute("id", "user-image");
     userPictureFile.classList.add("icon-img")
-    userPictureFile.setAttribute("src",`/static/images/profilep/${user.image}`)
-
+    if (user.image.includes("google")) {
+        userPictureFile.setAttribute("src",`${user.image}`)
+    }
+    else {
+        userPictureFile.setAttribute("src",`/static/images/profilep/${user.image}`)
+    }   
     userPicture.appendChild(userPictureFile)
 
     let userinChat = document.createElement('div')
@@ -298,18 +302,19 @@ const showDropdown = () => {
 
 
 // Close the dropdown menu if the user clicks outside of it
-// window.onclick = function(event) {
-//     if (!event.target.matches('.dropbtn')) {
-//       var dropdowns = document.getElementsByClassName("dropdown-content");
-//       var i;
-//       for (i = 0; i < dropdowns.length; i++) {
-//         var openDropdown = dropdowns[i];
-//         if (openDropdown.classList.contains('show')) {
-//           openDropdown.classList.remove('show');
-//         }
-//       }
-//     }
-//   }
+window.onclick = function(event) {
+    // if (!event.target.matches('.dropbtn')) {
+    if (!event.target.id == 'drop-btn') {
+      var dropdowns = document.getElementsByClassName("dropdown-content");
+      var i;
+      for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+  }
 
 //    location = window.location.reload(true);
 
