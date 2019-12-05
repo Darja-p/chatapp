@@ -12,7 +12,7 @@ class AddingMessage(FlaskForm):
     submit = SubmitField('Add')
 
 class LoginForm (FlaskForm) :
-    email = StringField ('Username' , validators=[DataRequired ()])
+    email = StringField ('Email' , validators=[DataRequired ()])
     password = PasswordField ('Password' , validators=[DataRequired ()])
     remember_me = BooleanField ('Remember Me')
     submit = SubmitField ('Sign In')
@@ -21,7 +21,7 @@ class LoginForm (FlaskForm) :
 class RegistrationForm(FlaskForm):
     first_name = StringField ('First name' , validators=[DataRequired ()])
     last_name = StringField ('Last name' , validators=[DataRequired ()])
-    email = StringField ('email' , validators=[DataRequired ()])
+    email = StringField ('Email' , validators=[DataRequired ()])
     password = PasswordField ('Password' , validators=[DataRequired ()])
     password2 = PasswordField (
         'Repeat Password' , validators=[DataRequired () , EqualTo ('password')])
@@ -41,7 +41,7 @@ class RegistrationForm(FlaskForm):
 
 class UpdateForm(FlaskForm):
     first_name = StringField ('First name' , validators=[DataRequired ()])
-    last_name = StringField ('First name' , validators=[DataRequired ()])
+    last_name = StringField ('Last name' , validators=[DataRequired ()])
     email = StringField ('Email' , validators=[DataRequired ()])
     user_bio = StringField ('Bio')
     picture = FileField("Update Profile Picture", validators = [FileAllowed(['jpg', 'png'])])

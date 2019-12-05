@@ -161,8 +161,9 @@ def save_picture(user_image):
     return picture_fn
 
 def delete_image(image_name):
-    picture_path = os.path.join(app.root_path,'static/images/profilep' , image_name )
-    os.remove(picture_path)
+    if image_name!="default.jpg":
+        picture_path = os.path.join(app.root_path,'static/images/profilep' , image_name )
+        os.remove(picture_path)
 
 
 @app.route('/account', methods=['GET', 'POST'])

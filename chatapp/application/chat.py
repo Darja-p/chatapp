@@ -127,7 +127,7 @@ def add_user(chat_id):
     #needs to be added to the function on top
     user_email = request.args.get ('user')
     user = Users.query.filter_by(email = user_email).first()
-    chatmap = Chatmap.query.filter(users = user.id,chats = chat_id ).first()
+    chatmap = Chatmap.query.filter_by(users = user.id,chats = chat_id ).first()
     if chatmap:
         pass
     else:

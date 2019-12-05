@@ -1,3 +1,9 @@
+html {
+    width:100%;
+    height: 100%;
+    display: table;
+}
+
 * {
     /* box-sizing: border-box; */
     text-rendering: optimizeLegibility;
@@ -10,9 +16,38 @@
     background-color: #ffffff;
 }
 
+#parent {
+    height:100%;
+    text-align: center;
+    background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAJUlEQVQoU2NsnLHsf31GFCMDHgBSg1cBst5RhfiCkoGo4AEFOABkAwmHhA7jHgAAAABJRU5ErkJggg==) repeat;
+
+}
+
+.jumbotron {
+    padding-top: 5rem;
+    display: inline-block;
+    margin-top: 3rem;
+}
+
 body {
     margin: 0;
     font-family: Arial, Helvetica, sans-serif;
+    width:100%;
+    height:100%;
+}
+
+.google {
+    border: none;
+    padding: 0;
+    width: 143.25px;
+    height: 34.5px;
+
+}
+
+#heading {
+    font-size: 2rem;
+    font-weight: 700;
+
 }
 
 /* account update page */
@@ -28,11 +63,44 @@ body {
     padding-left: 10px;
     padding-top: 10px;
     background-color: rgb(229, 221, 213, 0.9);
+    width:100%;
+    height: 100vh;
+    margin-right: 0;
+    margin-left: 0;
+    /* border-width: .2rem; */
+    
+    /* width: max-content; */
     /* display: flex;
     flex-direction: column;
     justify-content: space-evenly ; */
 
 }
+
+#form-id {
+    width: max-content;
+    height: min-content;
+    position: relative;
+    padding: 1rem;
+    margin: 0;
+    border: solid #f8f9fa;
+    border-width: .1rem;
+
+}
+
+.form-group {
+    margin-bottom: 0.5rem;
+    
+}
+
+label {
+    margin-bottom: 0.1rem;
+}
+
+hr {
+margin-top:0.3rem ;
+margin-bottom: 0.3rem;
+}
+
 .border-bottom-d{
     align-self: flex-start;
     border-bottom: 1px solid rgba(124, 121, 121, 0.774);
@@ -167,7 +235,9 @@ img.icon-img {
     background-color: #F27F3D;
     border: none;
     color: white;
-    padding: 16px 32px;
+    width:143.25px;
+    height: 34.5px;
+    /* padding: 16px 32px; */
     text-align: center;
     font-size: 16px;
     margin: 4px 2px;
@@ -177,6 +247,7 @@ img.icon-img {
   
 .btn:hover {opacity: 1}
  
+
 
 /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
 .show {
@@ -238,7 +309,8 @@ img.icon-img {
 #sidebar {
     /* height: 100%; */
     width: 35%;
-    background-color: #fefefe;
+    /* background-color: #fefefe; */
+    background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAJUlEQVQoU2N8fv9mg6SiegMDHgBSw4hPAbLcqEK8IUVU8IACHAD2AApJR4zQMQAAAABJRU5ErkJggg==) repeat;
     border-right: 1px solid #5D768C;
     display: flex;
     flex-direction: column;
@@ -356,8 +428,9 @@ p.mssg {
 
 #main-chat:after {
     content: "";
-    background: url('https://web.whatsapp.com/img/bg-chat-tile_8a055527b27b887521a9f084497d8879.png');
-    opacity: 0.5;
+    /* background: url('https://web.whatsapp.com/img/bg-chat-tile_8a055527b27b887521a9f084497d8879.png'); */
+    background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAJUlEQVQoU2NsnLHsf31GFCMDHgBSg1cBst5RhfiCkoGo4AEFOABkAwmHhA7jHgAAAABJRU5ErkJggg==) repeat;
+    opacity: 0.7;
     top: 0;
     left: 0;
     bottom: 0;
